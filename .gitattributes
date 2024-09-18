@@ -1,1 +1,5 @@
 *.txt diff
+
+*.txt text working-tree-encoding=UTF-16LE-BOM
+
+*.txt diff=localizablestrings
