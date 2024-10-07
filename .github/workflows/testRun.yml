@@ -14,6 +14,20 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
+    services:
+      mysql:
+        image: mysql:5.7
+        ports:
+          - 3306:3306
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: switcher
+        options: >-
+          --health-cmd="mysqladmin ping --silent"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
@@ -29,12 +43,20 @@ jobs:
         source .venv/bin/activate
         pip install -r requirements.txt
 
+    - name: Wait for MySQL
+      run: |
+        while ! mysqladmin ping -h"localhost" --silent; do
+          sleep 1
+        done
+
     - name: Run iterablefix.py
       run: |
         source .venv/bin/activate
         python iterablefix.py
 
     - name: Run tests
+      env:
+        DATABASE_URL: mysql+pymysql://root:root@localhost:3306/switcher
       run: |
         source .venv/bin/activate
         pytest
