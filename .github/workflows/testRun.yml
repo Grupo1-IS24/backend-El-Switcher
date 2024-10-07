@@ -43,18 +43,24 @@ jobs:
         source .venv/bin/activate
         pip install -r requirements.txt
 
+    - name: Create MySQL config file
+      run: |
+        echo "[client]" > ~/.my.cnf
+        echo "user=root" >> ~/.my.cnf
+        echo "password=root" >> ~/.my.cnf
+
     - name: Wait for MySQL
       run: |
         echo "Waiting for MySQL to be ready..."
         for i in {1..60}; do
-          if mysqladmin ping -h"localhost" -uroot -proot --silent; then
+          if mysqladmin ping -h"localhost" --silent; then
             echo "MySQL is ready!"
             break
           fi
           echo "Waiting for MySQL... ($i/60)"
           sleep 2
         done
-        mysqladmin ping -h"localhost" -uroot -proot --silent
+        mysqladmin ping -h"localhost" --silent
 
     - name: Run iterablefix.py
       run: |
