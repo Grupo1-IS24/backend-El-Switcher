@@ -3,30 +3,29 @@ name: CI
 on:
   push:
     branches:
-      - develop
       - main
+      - develop
   pull_request:
     branches:
-      - develop
       - main
+      - develop
 
 jobs:
-  test:
+  build:
     runs-on: ubuntu-latest
 
     services:
       mysql:
-        image: mysql:5.7
+        image: mysql:latest
+        env:
+          MYSQL_ROOT_PASSWORD: secret
         ports:
           - 3306:3306
-        env:
-          MYSQL_ROOT_PASSWORD: root
-          MYSQL_DATABASE: switcher
         options: >-
           --health-cmd="mysqladmin ping --silent"
           --health-interval=10s
           --health-timeout=5s
-          --health-retries=10
+          --health-retries=3
 
     steps:
     - name: Checkout code
@@ -43,24 +42,16 @@ jobs:
         source .venv/bin/activate
         pip install -r requirements.txt
 
-    - name: Create MySQL config file
+    - name: Wait for MySQL to be ready
       run: |
-        echo "[client]" > ~/.my.cnf
-        echo "user=root" >> ~/.my.cnf
-        echo "password=root" >> ~/.my.cnf
-
-    - name: Wait for MySQL
-      run: |
-        echo "Waiting for MySQL to be ready..."
-        for i in {1..60}; do
-          if mysqladmin ping -h"localhost" --silent; then
-            echo "MySQL is ready!"
-            break
-          fi
-          echo "Waiting for MySQL... ($i/60)"
-          sleep 2
+        until mysqladmin ping -h "127.0.0.1" --silent; do
+          echo 'waiting for mysql...'
+          sleep 5
         done
-        mysqladmin ping -h"localhost" --silent
+
+    - name: Create database
+      run: |
+        mysql -h 127.0.0.1 -u root -psecret -e "CREATE DATABASE switcher;"
 
     - name: Run iterablefix.py
       run: |
@@ -68,8 +59,14 @@ jobs:
         python iterablefix.py
 
     - name: Run tests
-      env:
-        DATABASE_URL: mysql+pymysql://root:root@localhost:3306/switcher
       run: |
         source .venv/bin/activate
         pytest
+
+    - name: Cache MySQL data
+      uses: actions/cache@v2
+      with:
+        path: /var/lib/mysql
+        key: ${{ runner.os }}-mysql-${{ hashFiles('**/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-mysql-
