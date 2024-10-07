@@ -46,14 +46,15 @@ jobs:
     - name: Wait for MySQL
       run: |
         echo "Waiting for MySQL to be ready..."
-        for i in {1..30}; do
+        for i in {1..60}; do
           if mysqladmin ping -h"localhost" --silent; then
             echo "MySQL is ready!"
             break
           fi
-          echo "Waiting for MySQL... ($i/30)"
+          echo "Waiting for MySQL... ($i/60)"
           sleep 2
         done
+        mysqladmin ping -h"localhost" --silent
 
     - name: Run iterablefix.py
       run: |
