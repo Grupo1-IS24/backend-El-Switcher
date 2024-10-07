@@ -1,0 +1,40 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - develop
+      - main
+  pull_request:
+    branches:
+      - develop
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.10'
+
+    - name: Install dependencies
+      run: |
+        python -m venv .venv
+        source .venv/bin/activate
+        pip install -r requirements.txt
+
+    - name: Run iterablefix.py
+      run: |
+        source .venv/bin/activate
+        python iterablefix.py
+
+    - name: Run tests
+      run: |
+        source .venv/bin/activate
+        pytest
