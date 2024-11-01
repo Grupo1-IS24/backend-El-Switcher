@@ -9,6 +9,7 @@ from app.services import lobby_events, game_events, game_list_events
 from app.services.board import delete_partial_cache, undo_played_moves
 from app.services.cards import assign_figure_cards, assign_movement_cards
 from app.services.game_player_service import get_game, get_player
+from app.services.timer import handle_timer
 from app.models.playerlock import PlayerAction, PlayerLock, lock_player
 
 
@@ -141,6 +142,9 @@ async def pass_turn(game_id: int, player_id: int, db: Session):
 
     # Notify all players the new turn info
     await game_events.emit_turn_info(game_id, db)
+
+    # Reset the timer for the new turn
+    await handle_timer(game_id, next_player.id, db, reset=True)
 
 
 async def end_turn(game_id: int, player_id: int, db: Session):
