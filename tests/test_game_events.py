@@ -2,7 +2,7 @@ import pytest
 from unittest.mock import AsyncMock, patch
 
 from app.services.game_events import emit_winner
-from app.services.timer import emit_timer
+from app.services.timer import emit_timer, time_left_dict
 
 from .db_setup import client, TestingSessionLocal, create_player
 
@@ -26,6 +26,9 @@ async def test_emit_timer(mock_end_turn, mock_broadcast, mock_sleep):
     # Mock Broadcast
     mock_broadcast_instance = AsyncMock()
     mock_broadcast.return_value = mock_broadcast_instance
+
+    # Set up the time_left_dict for the test
+    time_left_dict[1] = 120
 
     # Act
     await emit_timer(1, player.id, db)
