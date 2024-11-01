@@ -6,7 +6,7 @@ from app.schemas.player import PlayerResponseSchema, WinnerSchema
 from app.services.cards import fetch_figure_cards, fetch_movement_cards
 from app.services.board import get_board
 from app.services.figures import figures_event
-from app.services.timer import handle_timer
+from app.services.timer import handle_timer, time_left_dict
 
 
 async def disconnect_player_socket(player_id, game_id):
@@ -52,6 +52,12 @@ async def emit_turn_info(game_id, db):
 
     # send the turn info to all players in the lobby
     await broadcast.broadcast(sio.sio_game, game_id, "turn", turn_info)
+
+    # Emit the remaining time if it exists
+    if game_id in time_left_dict:
+        await broadcast.broadcast(
+            sio.sio_game, game_id, "timer", {"time": time_left_dict[game_id]}
+        )
 
     # start the timer for the current player
     await handle_timer(game_id, player.id, db)
