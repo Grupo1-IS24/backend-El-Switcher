@@ -112,6 +112,7 @@ async def start_game(game_id: int, db: Session) -> StartResponseSchema:
 
 async def pass_turn(game_id: int, player_id: int, db: Session):
     from app.services.timer import handle_timer
+
     game = get_game(game_id, db)
     player = get_player(player_id, db)
 
