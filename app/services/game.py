@@ -9,7 +9,6 @@ from app.services import lobby_events, game_events, game_list_events
 from app.services.board import delete_partial_cache, undo_played_moves
 from app.services.cards import assign_figure_cards, assign_movement_cards
 from app.services.game_player_service import get_game, get_player
-from app.services.timer import handle_timer
 from app.models.playerlock import PlayerAction, PlayerLock, lock_player
 
 
@@ -112,6 +111,7 @@ async def start_game(game_id: int, db: Session) -> StartResponseSchema:
 
 
 async def pass_turn(game_id: int, player_id: int, db: Session):
+    from app.services.timer import handle_timer
     game = get_game(game_id, db)
     player = get_player(player_id, db)
 
