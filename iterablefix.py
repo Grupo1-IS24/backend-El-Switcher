@@ -28,14 +28,9 @@ else:
     raise NotImplementedError(f"Unsupported platform: {platform.system()}")
 
 
-
-
-
 # Read the file contents
 with open(file_path, "r") as file:
     lines = file.readlines()
-
-
 
 
 # Replace the specific line
@@ -45,7 +40,6 @@ for line in lines:
         new_lines.append("from collections.abc import Iterable\n")
     else:
         new_lines.append(line)
-
 
 
 # Write the modified contents back to the file
