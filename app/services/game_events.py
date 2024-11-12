@@ -20,7 +20,7 @@ from app.schemas.logs import (
 from app.services.cards import fetch_figure_cards, fetch_movement_cards
 from app.services.board import get_board, get_blocked_color
 from app.services.figures import figures_event
-from app.services.timer import restart_timer, stop_timer
+from app.services.timer import restart_timer, stop_all_timers
 from app.services.chat import get_chat_history
 from app.services.logs import get_log_history
 
@@ -104,7 +104,7 @@ async def emit_winner(game_id, player_id, db):
         WinnerSchema(idWinner=winner.id, nameWinner=winner.name).model_dump(),
     )
 
-    stop_timer(game_id)
+    stop_all_timers(game_id)
 
 
 async def emit_cards(game_id, player_id, db):
