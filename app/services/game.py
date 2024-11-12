@@ -216,8 +216,10 @@ def cleanup(mapper, connection, target):
     if target.status == GameStatus.FINISHED:
         from app.services.timer import stop_all_timers
         from app.services.cleanup import cleanup_game
+        from sqlalchemy.orm import Session
 
-        stop_all_timers(target.id)
+        session = Session(bind=connection)
+        stop_all_timers(target.id, session)
         asyncio.create_task(cleanup_game(target.id))
 
 

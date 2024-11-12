@@ -29,7 +29,7 @@ async def test_emit_timer(mock_end_turn, mock_broadcast, mock_sleep):
     mock_broadcast_instance = AsyncMock()
     mock_broadcast.return_value = mock_broadcast_instance
 
-    time_left_tasks[game.id] = 120
+    time_left_tasks[(game.id, player.id)] = 120
 
     # Act
     await emit_timer(game.id, player.id, db)

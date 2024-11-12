@@ -104,7 +104,7 @@ async def emit_winner(game_id, player_id, db):
         WinnerSchema(idWinner=winner.id, nameWinner=winner.name).model_dump(),
     )
 
-    stop_all_timers(game_id)
+    stop_all_timers(game_id, db)
 
 
 async def emit_cards(game_id, player_id, db):
