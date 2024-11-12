@@ -214,10 +214,10 @@ async def remove_player_from_game(game_id: int, player_id: int, db: Session):
 
 def cleanup(mapper, connection, target):
     if target.status == GameStatus.FINISHED:
-        from app.services.timer import stop_timer
+        from app.services.timer import stop_all_timers
         from app.services.cleanup import cleanup_game
 
-        stop_timer(target.id)
+        stop_all_timers(target.id)
         asyncio.create_task(cleanup_game(target.id))
 
 
